@@ -90,6 +90,7 @@ class TTS(tts.TTS):
         reduce_latency: NotGivenOr[bool] = NOT_GIVEN,
         pause_between_brackets: NotGivenOr[bool] = NOT_GIVEN,
         phonemize_between_brackets: NotGivenOr[bool] = NOT_GIVEN,
+        url: NotGivenOr[str] = NOT_GIVEN,
         api_key: NotGivenOr[str] = NOT_GIVEN,
         http_session: aiohttp.ClientSession | None = None,
     ) -> None:
@@ -133,6 +134,7 @@ class TTS(tts.TTS):
                 phonemize_between_brackets=phonemize_between_brackets,
             )
         self._session = http_session
+        self.url = url if is_given(url) else DEFAULT_API_URL
 
     def _ensure_session(self) -> aiohttp.ClientSession:
         if not self._session:
@@ -187,6 +189,7 @@ class ChunkedStream(tts.ChunkedStream):
         self._session = session
         self._segment_id = segment_id if is_given(segment_id) else utils.shortuuid()
         self._api_key = api_key
+        self._url = tts.url
 
     async def _run(self) -> None:
         request_id = utils.shortuuid()
@@ -236,7 +239,7 @@ class ChunkedStream(tts.ChunkedStream):
         decode_task: asyncio.Task | None = None
         try:
             async with self._session.post(
-                DEFAULT_API_URL,
+                self._url,
                 headers=headers,
                 json=payload,
                 timeout=self._conn_options.timeout,
