@@ -183,11 +183,17 @@ class TTS(tts.TTS):
     ) -> None:
         if is_given(model):
             self._opts.model = model
+            # Initialize options for new model
+            if model == "arcana" and self._opts.arcana_options is None:
+                self._opts.arcana_options = _ArcanaOptions()
+            elif model == "mistv2" and self._opts.mistv2_options is None:
+                self._opts.mistv2_options = _Mistv2Options()
+
         if is_given(speaker):
             self._opts.speaker = speaker
 
-        # Update Arcana options
-        if self._opts.model == "arcana" and self._opts.arcana_options:
+        # Update based on CURRENT model, not provided model
+        if self._opts.model == "arcana" and self._opts.arcana_options is not None:
             if is_given(repetition_penalty):
                 self._opts.arcana_options.repetition_penalty = repetition_penalty
             if is_given(temperature):
@@ -201,8 +207,7 @@ class TTS(tts.TTS):
             if is_given(sample_rate):
                 self._opts.arcana_options.sample_rate = sample_rate
 
-        # Update Mistv2 options
-        elif self._opts.model == "mistv2" and self._opts.mistv2_options:
+        elif self._opts.model == "mistv2" and self._opts.mistv2_options is not None:
             if is_given(lang):
                 self._opts.mistv2_options.lang = lang
             if is_given(sample_rate):
