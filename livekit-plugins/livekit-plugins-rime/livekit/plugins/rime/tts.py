@@ -169,13 +169,13 @@ class TTS(tts.TTS):
         model: NotGivenOr[TTSModels | str] = NOT_GIVEN,
         speaker: NotGivenOr[str] = NOT_GIVEN,
         lang: NotGivenOr[TTSLangs | str] = NOT_GIVEN,
-        # Arcana options
+        # Arcana parameters
         repetition_penalty: NotGivenOr[float] = NOT_GIVEN,
         temperature: NotGivenOr[float] = NOT_GIVEN,
         top_p: NotGivenOr[float] = NOT_GIVEN,
         max_tokens: NotGivenOr[int] = NOT_GIVEN,
-        # Mistv2 options
         sample_rate: NotGivenOr[int] = NOT_GIVEN,
+        # Mistv2 parameters
         speed_alpha: NotGivenOr[float] = NOT_GIVEN,
         reduce_latency: NotGivenOr[bool] = NOT_GIVEN,
         pause_between_brackets: NotGivenOr[bool] = NOT_GIVEN,
@@ -185,8 +185,36 @@ class TTS(tts.TTS):
             self._opts.model = model
         if is_given(speaker):
             self._opts.speaker = speaker
-        if is_given(lang):
-            self._opts.lang = lang
+
+        # Update Arcana options
+        if self._opts.model == "arcana" and self._opts.arcana_options:
+            if is_given(repetition_penalty):
+                self._opts.arcana_options.repetition_penalty = repetition_penalty
+            if is_given(temperature):
+                self._opts.arcana_options.temperature = temperature
+            if is_given(top_p):
+                self._opts.arcana_options.top_p = top_p
+            if is_given(max_tokens):
+                self._opts.arcana_options.max_tokens = max_tokens
+            if is_given(lang):
+                self._opts.arcana_options.lang = lang
+            if is_given(sample_rate):
+                self._opts.arcana_options.sample_rate = sample_rate
+
+        # Update Mistv2 options
+        elif self._opts.model == "mistv2" and self._opts.mistv2_options:
+            if is_given(lang):
+                self._opts.mistv2_options.lang = lang
+            if is_given(sample_rate):
+                self._opts.mistv2_options.sample_rate = sample_rate
+            if is_given(speed_alpha):
+                self._opts.mistv2_options.speed_alpha = speed_alpha
+            if is_given(reduce_latency):
+                self._opts.mistv2_options.reduce_latency = reduce_latency
+            if is_given(pause_between_brackets):
+                self._opts.mistv2_options.pause_between_brackets = pause_between_brackets
+            if is_given(phonemize_between_brackets):
+                self._opts.mistv2_options.phonemize_between_brackets = phonemize_between_brackets
 
 
 class ChunkedStream(tts.ChunkedStream):
